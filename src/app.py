@@ -161,6 +161,7 @@ if not cli_mode:
 
                 def _run():
                     receiver.open()
+                    receiver.send_mission_id_table(socketio_instance=socketio)
                     receiver.capture_loop(csv_path, socketio_instance=socketio)
 
                 _background_thread = socketio.start_background_task(_run)

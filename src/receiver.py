@@ -21,6 +21,8 @@ import logging
 import os
 import time
 
+from flask_socketio import SocketIO
+
 from modules import BaseCom
 
 
@@ -318,3 +320,14 @@ class Receiver:
             except Exception as exc:
                 self.logger.error(f"erro no loop de captura: {exc}")
                 time.sleep(interval)
+
+    def send_mission_id_table(self, socketio_instance: SocketIO) -> bool:
+        event_name: str = "id_table"
+        event_content: dict = {
+                    213: "satelite",
+                    51: "foguete-2",
+                    11: "foguete-1"
+                }
+
+        socketio_instance.emit(event_name, )
+        return True
