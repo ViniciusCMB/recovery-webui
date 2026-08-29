@@ -1,0 +1,7 @@
+Testes unitários para o firmware do Beacon LoRa.
+
+Structure:
+- test_main/   - Testes do loop principal
+- test_gps/    - Testes do módulo GPS
+- test_imu/    - Testes do módulo IMU
+- test_sensor/ - Testes do módulo de sensores

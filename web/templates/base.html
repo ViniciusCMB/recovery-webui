@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Serra Rocketry</title>
+    <link href="static/css/app.css" rel="stylesheet" />
+    <link rel="icon" type="image/x-icon" href="static/assets/favicon.ico" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" crossorigin=""></script>
+
+    <link rel="stylesheet" href="static/js/leaflet/leaflet.css" />
+    <script src="static/js/leaflet/leaflet.js"></script>
+  </head>
+  <body>
+    <header>
+      <nav class="navigation">
+        <div class="logo-div">
+          <img src="static/assets/LOGO - SEM TEXTO.png" alt="" class="logo" />
+          <h1>Serra Rocketry</h1>
+        </div>
+        <div class="nav-links">
+          {%- if request.path == '/satellite' -%}
+            <a href="/" class="nav-button">Foguete</a>
+          {%- else -%}
+            <a href="/satellite" class="nav-button">Satélite</a>
+          {%- endif -%}
+        </div>
+      </nav>
+    </header>
+    {% block content %} {% endblock %}
+    <script src="static/js/jquery-3.7.1.js"></script>
+    <script src="static/js/app.js"></script>
+    <script src="static/js/socket.io.js"></script>
+  </body>
+</html>

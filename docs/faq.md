@@ -122,7 +122,7 @@ Acesse `http://localhost:5000/satellite` no navegador.
 
 ### Onde ficam salvos os dados?
 
-Em `app/logs/log.csv` no formato CSV com timestamp.
+Em `web/static/logs/log.csv` no formato CSV com timestamp.
 
 ### Como exporto os dados para análise?
 
@@ -149,7 +149,7 @@ http://<ip-do-servidor>:5000
 Simplesmente delete ou renomeie o arquivo:
 
 ```bash
-mv app/logs/log.csv app/logs/log_backup_$(date +%Y%m%d).csv
+mv web/static/logs/log.csv web/static/logs/log_backup_$(date +%Y%m%d).csv
 ```
 
 ## Hardware

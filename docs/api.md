@@ -140,7 +140,7 @@ Evento emitido quando novos dados do foguete são recebidos (TEAM_ID #100).
     "altura": "150.5",           // string - Altitude barométrica em metros
     "satelites": "8",            // string - Número de satélites GPS
     "rssi": "-75",               // string - RSSI do sinal LoRa em dBm
-    "pqd": "0",                  // string - Status paraquedas (0=fechado, 1=aberto)
+
     "time": "2025-01-20 14:30:45" // string - Timestamp servidor
 }
 ```
@@ -155,7 +155,7 @@ socket.on("updateRocket", function (data) {
   var alt = parseFloat(data.altura);
 
   // Atualizar mapa
-  addData(lat, lon, alt, data.satelites, data.time, data.rssi, data.pqd);
+
 });
 ```
 
@@ -221,7 +221,7 @@ socket.on("updateSat", function (data) {
 Formato recebido pela porta serial:
 
 ```csv
-TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon,sat,pqd,rssi
+TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon,sat,rssi
 ```
 
 **Campos:**
@@ -247,7 +247,7 @@ TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon,sat
 | lat     | float  | Latitude                     | °       | -23.5505   |
 | lon     | float  | Longitude                    | °       | -46.6333   |
 | sat     | int    | Número de satélites          | -       | 8          |
-| pqd     | int    | Status paraquedas            | -       | 0 ou 1     |
+
 | rssi    | int    | RSSI LoRa                    | dBm     | -75        |
 
 **Exemplo completo:**
@@ -258,10 +258,10 @@ TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon,sat
 
 ### Arquivo de Log (CSV)
 
-Formato salvo em `logs/log.csv`:
+Formato salvo em `web/static/logs/log.csv`:
 
 ```csv
-NOW,TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon,sat,pqd,rssi
+NOW,TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon,sat,rssi
 2025-01-20 14:30:45,#100,12345,42,150.5,25.3,45.2,1013.25,0.5,1.2,-0.3,0.1,0.2,9.8,143045,20012025,150.0,-23.5505,-46.6333,8,0,-75
 ```
 
@@ -312,7 +312,7 @@ NOW,TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon
                 <p>Posição: ${data.latitude}, ${data.longitude}</p>
                 <p>Altitude: ${data.altura} m</p>
                 <p>Satélites: ${data.satelites}</p>
-                <p>Paraquedas: ${data.pqd === "1" ? "Aberto" : "Fechado"}</p>
+
                 <p>RSSI: ${data.rssi} dBm</p>
                 <p>Hora: ${data.time}</p>
             `;

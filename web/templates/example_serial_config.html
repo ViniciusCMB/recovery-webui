@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title> config serial </title>
+        <link href="{{ url_for("static", filename="css/example_serial_config.css") }}" rel="stylesheet" />
+        <script src="{{ url_for("static", filename = "js/example_serial_config.js") }}"></script>
+    </head>
+    <body>
+        <div id="config_container">
+            <label for="serial"> Serial: </label>
+            <select id="serial_port_field" name="serial">
+                <option value=" Selecione uma serial... "> Selecione uma serial... </option>
+            </select>
+
+            <label for="baudrate"> Baudrate: </label>
+            <input id="baudrate_field" type="number" name="baudrate" value="">
+
+            <label for="timeout"> Timeout: </label>
+            <input id="timeout" type="number" name="timeout" value="">
+
+            <br>
+
+            <button type="button" onclick="refresh_serial_list()"> 
+                Atualizar 
+            </button>
+            <button type="button" onclick="send_new_config()"> 
+                Connectar 
+            </button>
+            <button type="button" onclick="disconnect_serial()">
+                Desconectar 
+            </button>
+        </div>
+    </body>
+</html>

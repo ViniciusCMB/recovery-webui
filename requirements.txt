@@ -1,9 +1,5 @@
-Flask==2.2.1
-Flask_SocketIO==5.5.1
-pyserial==3.5
-# Allow a Werkzeug version that satisfies Flask 2.2.1 but avoid major 3.x
-# which may remove/rename helpers Flask expects. This lets pip choose
-# the latest compatible 2.2.x release (e.g. 2.2.3) while preventing
-# incompatible 3.x installs that can trigger ImportError for symbols
-# like `url_quote`.
-werkzeug>=2.2.0,<3.0
+Flask>=3.0.0
+Flask_SocketIO>=5.3.0
+pyserial>=3.5
+python-socketio>=5.10.0
+simple-term-menu>=1.6.0

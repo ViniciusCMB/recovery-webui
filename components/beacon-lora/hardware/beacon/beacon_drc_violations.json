@@ -1,0 +1,88 @@
+{
+  "board": "/home/vinicius/Documentos/projects/recovery-webui/components/receiver-lora/hardware/receiver/receiver.kicad_pcb",
+  "timestamp": "2026-07-06T21:29:58",
+  "total_violations": 7,
+  "violation_counts": {
+    "silk_over_copper": 1,
+    "lib_footprint_issues": 4,
+    "silk_edge_clearance": 1,
+    "isolated_copper": 1
+  },
+  "severity_counts": {
+    "error": 0,
+    "warning": 7,
+    "info": 0
+  },
+  "violations": [
+    {
+      "type": "silk_over_copper",
+      "severity": "warning",
+      "message": "Silkscreen clipped by solder mask",
+      "location": {
+        "x": 95.0,
+        "y": 120.0,
+        "unit": "mm"
+      }
+    },
+    {
+      "type": "lib_footprint_issues",
+      "severity": "warning",
+      "message": "Footprint 'MountingHole_3.2mm' n\u00e3o encontrado na biblioteca 'MountingHole'",
+      "location": {
+        "x": 5.0,
+        "y": 120.0,
+        "unit": "mm"
+      }
+    },
+    {
+      "type": "lib_footprint_issues",
+      "severity": "warning",
+      "message": "Footprint 'MountingHole_3.2mm' n\u00e3o encontrado na biblioteca 'MountingHole'",
+      "location": {
+        "x": 5.0,
+        "y": 25.0,
+        "unit": "mm"
+      }
+    },
+    {
+      "type": "lib_footprint_issues",
+      "severity": "warning",
+      "message": "Footprint 'MountingHole_3.2mm' n\u00e3o encontrado na biblioteca 'MountingHole'",
+      "location": {
+        "x": 95.0,
+        "y": 25.0,
+        "unit": "mm"
+      }
+    },
+    {
+      "type": "lib_footprint_issues",
+      "severity": "warning",
+      "message": "Footprint 'MountingHole_3.2mm' n\u00e3o encontrado na biblioteca 'MountingHole'",
+      "location": {
+        "x": 95.0,
+        "y": 120.0,
+        "unit": "mm"
+      }
+    },
+    {
+      "type": "silk_edge_clearance",
+      "severity": "warning",
+      "message": "Silkscreen clipped by board edge",
+      "location": {
+        "x": 96.0,
+        "y": 136.0,
+        "unit": "mm"
+      }
+    },
+    {
+      "type": "isolated_copper",
+      "severity": "warning",
+      "message": "Isolated copper fill",
+      "location": {
+        "x": 95.95,
+        "y": 28.95,
+        "unit": "mm"
+      }
+    }
+  ]
+}

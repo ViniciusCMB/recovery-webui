@@ -75,32 +75,58 @@ pip install ipython
 ### Backend (Python)
 
 ```
-app/
-├── app.py                  # Aplicação Flask principal
-│   ├── Flask app initialization
-│   ├── Routes (/, /satellite)
-│   ├── SocketIO event handlers
-│   └── background_thread()
+src/
+├── app.py                  # Aplicacao principal (Flask + CLI)
+│   ├── Modo Flask
+│   │   ├── Flask app initialization
+│   │   ├── Routes (/, /satellite)
+│   │   └── SocketIO event handlers
+│   │
+│   ├── Modo CLI
+│   │   ├── Menu interativo (TerminalMenu)
+│   │   ├── Configuracao serial (porta, baudrate, timeout)
+│   │   ├── Ativar/Desativar serial
+│   │   ├── Monitorar dados em tempo real
+│   │   └── Captura para CSV
+│   │
+│   └── Entry-point (--cli, --simulation, --debug)
 │
-├── module/
-│   ├── __init__.py        # Importações do módulo
-│   └── SerialCOM.py       # Comunicação serial
-│       ├── class base_com
-│       └── def list_ports()
+├── receiver.py             # Logica de comunicacao + parser
+│   ├── parse_packet()      # Parser v2.0 (24 campos + # opcional)
+│   ├── TEAM_MAP            # #11 → updateRocket, #213 → updateSat
+│   ├── CSV_HEADER          # Cabecalho CSV padrao
+│   └── class Receiver      # Encapsula serial, parser e captura
+│       ├── read_and_parse()
+│       ├── capture_loop(csv_path, socketio=...)
+│       └── build_event(team_id, fields)
 │
+├── modules/
+│   ├── __init__.py         # Exporta BaseCom, FakeCom, list_ports
+│   ├── SerialCOM.py        # Comunicacao serial real
+│   │   ├── class BaseCom
+│   │   │   ├── open() / close() / check_connected()
+│   │   │   ├── read_response() / send_command()
+│   │   │   ├── get_port() / set_port() / get_baudrate() / ...
+│   │   │   └── get_port_options() / get_baudrate_options()
+│   │   └── def list_ports()
+│   │
+│   └── FakeCOM.py          # Dados sinteticos para testes
+│       └── class FakeCom(BaseCom)
+│           └── Gera dados v2.0 com TEAM_ID #213 (ciclico)
+│
+web/
 ├── templates/             # Templates Jinja2
 │   ├── base.html         # Template base
-│   ├── index.html        # Página do foguete
-│   └── satellite.html    # Página do satélite
+│   ├── index.html        # Pagina do foguete (#11, #51)
+│   └── satellite.html    # Pagina do satelite (#213)
 │
-├── static/               # Arquivos estáticos
+├── static/               # Arquivos estaticos
 │   ├── css/
 │   │   └── app.css      # Estilos customizados
-│   └── js/
-│       └── app.js       # Lógica do cliente
-│
-└── logs/
-    └── log.csv          # Logs de telemetria
+│   ├── js/
+│   │   └── app.js       # Lógica do cliente
+│   └── logs/
+│       └── log.csv      # Logs de telemetria
 ```
 
 ### Frontend (JavaScript)
@@ -143,23 +169,23 @@ def calcAlt(p,t):
 
 ```bash
 # Formatar todos os arquivos Python
-black app/
+black src/
 
 # Verificar sem modificar
-black --check app/
+black --check src/
 
 # Formatar arquivo específico
-black app/app.py
+black src/app.py
 ```
 
 #### Linting com Flake8
 
 ```bash
 # Verificar todos os arquivos
-flake8 app/
+flake8 src/
 
 # Ignorar certos erros (opcional)
-flake8 --ignore=E501,W503 app/
+flake8 --ignore=E501,W503 src/
 ```
 
 ### JavaScript (Frontend)
@@ -211,48 +237,52 @@ function add(lat, lon, t) {
 
 ## Testando Mudanças
 
-### Teste Manual Básico
+### Teste Manual Basico
 
-1. **Teste sem hardware real:**
-
-```python
-# Crie um arquivo test_mock.py
-import time
-from module import base_com
-
-class MockSerial:
-    """Mock da porta serial para testes."""
-
-    def __init__(self):
-        self.is_open = True
-        self.counter = 0
-
-    def readline(self):
-        self.counter += 1
-        # Simula dados do foguete
-        data = f"#100,{self.counter*1000},{ self.counter},150.5,25.3,45.2,1013.25,0.5,1.2,-0.3,0.1,0.2,9.8,143045,20250120,150.0,-23.5505,-46.6333,8,0,-75\n"
-        time.sleep(0.5)
-        return data.encode('utf-8')
-
-    def close(self):
-        pass
-
-# Use no app.py durante desenvolvimento
-# com = MockSerial()
-```
-
-2. **Teste de integração:**
+1. **Teste com dados sinteticos (sem hardware):**
 
 ```bash
-# Terminal 1: Execute o servidor
-cd app
-python3 app.py
+# Modo CLI com FakeCom
+cd src
+python app.py --cli --simulation
 
-# Terminal 2: Teste com curl
-curl http://localhost:5000/
+# Ou apenas valide o parser
+python -c "
+import sys; sys.path.insert(0, 'src')
+from modules import FakeCom
+from receiver import Receiver, parse_packet
 
-# Terminal 3: Teste WebSocket com Python
-python3 test_websocket_client.py
+fc = FakeCom()
+fc.open()
+line = fc.read_response()
+result = parse_packet(line)
+print(result)
+"
+```
+
+2. **Teste de integracao (com receiver real):**
+
+```bash
+# Terminal 1: Modo CLI com hardware
+cd src
+python app.py --cli
+
+# Selecione a porta serial no menu, ative e monitore
+
+# Terminal 2: Modo web (opcional)
+cd src
+python app.py  # Acessar http://localhost:5000/
+```
+
+3. **Teste com simulate-receiver (ESP32):**
+
+```bash
+# 1. Carregue simulate-receiver.ino no ESP32
+# 2. Conecte o ESP32 via USB
+# 3. Execute o CLI
+cd src
+python app.py --cli
+# Selecione a porta /dev/ttyACM*, ative a serial, monitore
 ```
 
 ### Testes Automatizados
@@ -271,19 +301,36 @@ recovery-webui/
 #### Exemplo de Teste (PyTest)
 
 ```python
-# tests/test_serial.py
+# tests/test_receiver.py
 import pytest
-from module.SerialCOM import list_ports
+from receiver import parse_packet, CSV_HEADER, TEAM_MAP
 
-def test_list_ports():
-    """Testa listagem de portas."""
-    ports = list_ports()
-    assert isinstance(ports, list)
+def test_parse_packet_rocket():
+    """Testa parse de pacote valido #11."""
+    line = "#11,5000,1,150.5,25.3,45.2,1013.25,0.1,0.2,-0.1,0.0,0.1,9.8,0.0,150.5,0,143000,20012025,150.0,-23.5505,-46.6333,8,0,-45"
+    result = parse_packet(line)
+    assert result is not None
+    team_id, fields = result
+    assert team_id == "#11"
 
-def test_base_com_init():
-    """Testa inicialização da classe base_com."""
-    # Teste com mock ou hardware real
-    pass
+def test_parse_packet_satellite():
+    """Testa parse de pacote valido #213."""
+    line = "#213,10000,15,500.0,28.5,55.0,955.0,0.02,-0.01,0.01,0.05,0.10,-9.81,0.00,500.0,0,500.0,-21.94305,-48.95409,10,0,-50"
+    result = parse_packet(line)
+    assert result is not None
+    team_id, fields = result
+    assert team_id == "#213"
+
+def test_parse_packet_with_hash():
+    """Testa parse com marcador # final."""
+    line = "#213,10000,15,500.0,28.5,55.0,955.0,0.02,-0.01,0.01,0.05,0.10,-9.81,0.00,500.0,0,500.0,-21.94305,-48.95409,10,0,-50#\n"
+    result = parse_packet(line)
+    assert result is not None
+
+def test_parse_invalid():
+    """Testa parse de pacote invalido."""
+    result = parse_packet("lixo\n")
+    assert result is None
 ```
 
 #### Executar Testes
@@ -310,28 +357,23 @@ pytest --cov=app tests/
 
 ### 1. Adicionar Novo Campo de Telemetria
 
-**Exemplo:** Adicionar campo de velocidade vertical
+**Exemplo:** Adicionar campo de tensao da bateria
 
-**Backend (app.py):**
+**Backend (receiver.py):**
 
 ```python
-def background_thread():
-    # ... código existente ...
+# No parse_packet(): adicione no mapeamento de campos
+EXPECTED_FIELDS = 25  # Agora sao 25 campos
+```
 
-    # Adicione o novo campo no parse
-    TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon,sat,pqd,rssi,vvel = fields
+Depois, no `CaptureSession` que ouve o evento:
 
-    if TEAM_ID == '#100':
-        socketio.emit('updateRocket', {
-            'latitude': lat,
-            'longitude': lon,
-            'altura': altp,
-            'satelites': sat,
-            'rssi': rssi,
-            'pqd': pqd,
-            'velocidadeVertical': vvel,  # Novo campo
-            'time': now
-        })
+```python
+# No build_event() do Receiver
+if team_id in TEAM_MAP:
+    event = TEAM_MAP[team_id]
+    data = event['builder'](fields)
+    data['batteryVoltage'] = fields.get('bat', 0.0)  # Novo campo
 ```
 
 **Frontend (app.js):**
@@ -341,14 +383,11 @@ socket.on("updateRocket", function (msg) {
   var jsonData = msg;
   var latitude = jsonData.latitude;
   var longitude = jsonData.longitude;
-  var satelites = jsonData.satelites;
-  var time = jsonData.time;
   var altura = jsonData.altura;
+  var time = jsonData.time;
   var rssi = jsonData.rssi;
-  var pqd = jsonData.pqd;
-  var vvel = jsonData.velocidadeVertical; // Novo campo
-
-  addData(latitude, longitude, altura, satelites, time, rssi, pqd, vvel);
+  var battery = jsonData.batteryVoltage; // Novo campo
+  // ...
 });
 ```
 
@@ -415,7 +454,7 @@ from flask import jsonify
 def get_history():
     """Retorna histórico de dados do log."""
     try:
-        with open('logs/log.csv', 'r') as f:
+        with open('web/static/logs/log.csv', 'r') as f:
             lines = f.readlines()[1:]  # Pula header
             data = [line.strip().split(',') for line in lines]
         return jsonify({'success': True, 'data': data})
@@ -530,7 +569,7 @@ socket.on("updateRocket", function (msg) {
 #### Debugger do Navegador
 
 ```javascript
-function addData(latitude, longitude, altura, satelites, time, rssi, pqd) {
+function addData(latitude, longitude, altura, satelites, time, rssi) {
   // Breakpoint - adicione via DevTools ou:
   debugger;
 

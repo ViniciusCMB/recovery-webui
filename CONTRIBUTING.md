@@ -363,7 +363,7 @@ docs/traducao-pt-br
 ```python
 # tests/test_serial.py
 import pytest
-from module.SerialCOM import list_ports, base_com
+from modules.SerialCOM import BaseCom, list_ports
 
 def test_list_ports():
     """Testa listagem de portas."""
@@ -373,7 +373,7 @@ def test_list_ports():
 def test_base_com_invalid_port():
     """Testa erro com porta inválida."""
     with pytest.raises(Exception):
-        com = base_com('/dev/invalid_port')
+        com = BaseCom(port='/dev/invalid_port')
 ```
 
 Execute com:

@@ -218,8 +218,8 @@ python3 -c "import flask; import flask_socketio; import serial; print('✓ Todas
 ### Teste da Porta Serial
 
 ```bash
-cd app
-python3 -c "from module import list_ports; print(list_ports())"
+cd src
+python3 -c "from modules import list_ports; print(list_ports())"
 ```
 
 Deve listar as portas seriais disponíveis.

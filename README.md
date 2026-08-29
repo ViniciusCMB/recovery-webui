@@ -127,7 +127,7 @@ recovery-webui/
 O sistema espera dados no seguinte formato CSV via serial:
 
 ```
-TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon,sat,pqd,rssi
+TEAM_ID,millis,count,altp,temp,umi,p,gp,gr,gy,ap,ar,ay,hora,data,alt,lat,lon,sat,rssi
 ```
 
 Onde:
@@ -145,7 +145,7 @@ Onde:
 - `alt`: Altitude GPS (m)
 - `lat`, `lon`: Coordenadas GPS
 - `sat`: Número de satélites GPS
-- `pqd`: Status do paraquedas (0 ou 1)
+
 - `rssi`: Intensidade do sinal LoRa
 
 ## 📚 Documentação Adicional
