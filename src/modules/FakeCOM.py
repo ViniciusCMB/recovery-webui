@@ -31,6 +31,8 @@ class FakeCom(BaseCom):
     def __init__(self, logger_: logging.Logger = logging.getLogger(__name__)):
         self._is_open = False
         self._fake_port = "fake-1"
+        self._fake_baudrate = 115200
+        self._fake_timeout = 1.0
 
         # Dados sintéticos no formato v2.0 (24 campos)
         # TEAM_ID,millis,count,altp,temp,umi,p,gx,gy,gz,ax,ay,az,
@@ -95,10 +97,10 @@ class FakeCom(BaseCom):
         return self._fake_port
 
     def get_baudrate(self) -> int:
-        return 115200
+        return self._fake_baudrate
 
     def get_timeout(self) -> float:
-        return 1.0
+        return self._fake_timeout
 
     def set_port(self, port: str) -> None:
         self.logger.info(f"definindo porta simulada como {port}")
@@ -106,9 +108,11 @@ class FakeCom(BaseCom):
 
     def set_baudrate(self, baudrate: int) -> None:
         self.logger.info(f"definindo baudrate simulado como {baudrate}")
+        self._fake_baudrate = baudrate
 
     def set_timeout(self, timeout: float) -> None:
         self.logger.info(f"definindo timeout simulado como {timeout}")
+        self._fake_timeout = timeout
 
     # ── Opções ───────────────────────────────────────────────────────────
 

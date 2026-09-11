@@ -1,0 +1,11 @@
+# Source - https://stackoverflow.com/a/677212
+# Posted by lhunath, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-07-12, License - CC BY-SA 4.0
+ 
+if ! command -v npx >/dev/null 2>&1
+then
+    # Rodando fora de contexto do front-end, não aplicar lint-staged
+    exit
+fi
+cd web/front-end
+npx lint-staged

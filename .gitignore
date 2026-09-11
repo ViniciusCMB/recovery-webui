@@ -27,6 +27,7 @@ venv/
 ENV/
 env/
 .venv
+.direnv
 
 # IDEs
 .vscode/
@@ -46,6 +47,7 @@ components/*/hardware/_autosave-*
 # Flask
 instance/
 .webassets-cache
+web/static
 
 # Testing
 .pytest_cache/
@@ -89,3 +91,9 @@ site/
 
 # Obsidian 
 .obsidian/
+
+# Data generated/received via launch antena
+logs/
+data/
+src/logs/
+src/data/

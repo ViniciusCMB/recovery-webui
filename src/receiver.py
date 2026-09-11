@@ -21,6 +21,8 @@ import logging
 import os
 import time
 
+from flask_socketio import SocketIO
+
 from modules import BaseCom
 
 
@@ -40,18 +42,23 @@ TEAM_MAP: dict[str, tuple[str, Callable]] = {}
 
 def _rocket_event(fields: dict, now: str) -> dict:
     return {
+
+        "team_id": fields["team_id"],
         "latitude": fields["lat"],
         "longitude": fields["lon"],
         "altura": fields["altp"],
         "satelites": fields["sat"],
+        "temperatura": fields["temp"],
+        "umidade": fields["umi"],
+        "pressao": fields["press"],
         "rssi": fields["rssi"],
-        "pqd": fields["parachute"],
         "time": now,
     }
 
 
 def _sat_event(fields: dict, now: str) -> dict:
     return {
+        "team_id": fields["team_id"],
         "latitude": fields["lat"],
         "longitude": fields["lon"],
         "altura": fields["altp"],
@@ -127,6 +134,7 @@ def parse_packet(
     ) = fields
 
     return team_id, {
+        "team_id": team_id,
         "millis": millis,
         "count": count,
         "altp": altp,
@@ -318,3 +326,14 @@ class Receiver:
             except Exception as exc:
                 self.logger.error(f"erro no loop de captura: {exc}")
                 time.sleep(interval)
+
+    def send_mission_id_table(self, socketio_instance: SocketIO) -> bool:
+        event_name: str = "id_table"
+        event_content: dict = {
+                    213: "satelite",
+                    51: "foguete-2",
+                    11: "foguete-1"
+                }
+
+        socketio_instance.emit(event_name, )
+        return True

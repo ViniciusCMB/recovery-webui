@@ -24,21 +24,29 @@ import subprocess
 import sys
 import time
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
+from flask.app import cli
 from flask_socketio import SocketIO
+import serial
 from simple_term_menu import TerminalMenu
 
 from modules import BaseCom, FakeCom
 from receiver import Receiver, CSV_HEADER, parse_packet
 
+from time import sleep
 
 # ══════════════════════════════════════════════════════════════════════════
 # Argumentos de linha de comando
 # ══════════════════════════════════════════════════════════════════════════
 
+'''
+default_serial_port: str = "/dev/ttyUSB1"
+default_serial_baudrate: int = 115200
+default_serial_timeout: float = 1.0
+
 debug_mode = False
-simulation_mode = False
 cli_mode = False
+simulation_mode = False
 
 for arg in sys.argv[1:]:
     if arg == "--help":
@@ -56,6 +64,34 @@ for arg in sys.argv[1:]:
         cli_mode = True
     elif arg == "--simulation":
         simulation_mode = True
+'''
+
+### parsing command line arguments:
+
+import argparse
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument("-d", "--debug", action="store_true")
+parser.add_argument("-c", "--cli", action="store_true")
+parser.add_argument("-s", "--simulation", action="store_true")
+
+# port_auto_select = BaseCom().get_port_options()[0]
+port_auto_select = BaseCom().get_port_options()[0] if len(BaseCom().get_port_options()) else "empty"
+
+parser.add_argument("-p", "--port", type=str, default=port_auto_select)
+parser.add_argument("-b", "--baudrate", type=int, default=115200)
+parser.add_argument("-t", "--timeout", type=float, default=1.0)
+
+args = parser.parse_args()
+
+debug_mode: bool = args.debug
+cli_mode: bool = args.cli
+simulation_mode: bool = args.simulation
+
+default_serial_port: str = args.port
+default_serial_baudrate: int = args.baudrate
+default_serial_timeout: float = args.timeout
 
 # ══════════════════════════════════════════════════════════════════════════
 # Logging estruturado
@@ -116,6 +152,27 @@ else:
         )
         sys.exit(1)
     com = BaseCom(antenna_logger)
+
+
+com.set_port(default_serial_port)
+# com.set_port(com.get_port_options()[0])
+com.set_baudrate(default_serial_baudrate)
+com.set_timeout(default_serial_timeout)
+
+serial_retry_time = 1
+
+while True:
+    if not cli_mode: 
+        com.open()
+        main_logger.info(com.check_connected())
+        if com.check_connected() == False:
+            main_logger.error(f"conexão serial falhou, tentando novamente em {serial_retry_time}")
+            sleep(serial_retry_time)
+        else:
+            break
+    else:
+        break
+
 data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
 receiver = Receiver(com, logger=antenna_logger, data_dir=data_dir)
 
@@ -130,7 +187,7 @@ if not cli_mode:
     app = Flask(
         __name__,
         template_folder=os.path.join(web_dir, "templates"),
-        static_folder=os.path.join(web_dir, "static"),
+        static_folder=os.path.join(web_dir, "front-end", "dist"),
     )
     app.config["SESSION_COOKIE_PATH"] = "/"
 
@@ -142,7 +199,11 @@ if not cli_mode:
 
     @app.route("/")
     def index():
-        return render_template("index.html")
+        return send_from_directory(app.static_folder, "index.html")
+
+    @app.route("/<path:path>")
+    def dynamic_rout(path):
+        return send_from_directory(app.static_folder, path)
 
 
     @app.route("/satellite")
@@ -161,6 +222,7 @@ if not cli_mode:
 
                 def _run():
                     receiver.open()
+                    receiver.send_mission_id_table(socketio_instance=socketio)
                     receiver.capture_loop(csv_path, socketio_instance=socketio)
 
                 _background_thread = socketio.start_background_task(_run)

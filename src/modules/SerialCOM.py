@@ -1,3 +1,4 @@
+
 """
 Módulo de comunicação serial para o Recovery WebUI.
 
@@ -5,11 +6,12 @@ Fornece a classe BaseCom para comunicação serial real via pyserial
 e a função module-level list_ports() para enumeração de portas seriais.
 """
 
+import glob
+import logging
+import platform
 import serial
 import serial.tools.list_ports
 import sys
-import glob
-import logging
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -89,7 +91,10 @@ class BaseCom:
             line = self._serial.readline()
             if not line:
                 return None
-            return line.decode("utf-8").strip()
+            if(is_wsl()):
+                return line.decode("latin-1").strip()
+            else:
+                return line.decode("utf-8").strip()
         except serial.SerialException as err:
             self.logger.error(f"erro ao ler da serial: {err}")
             return None
@@ -174,3 +179,23 @@ class BaseCom:
 def list_ports() -> list:
     """Atalho para BaseCom.list_ports()."""
     return BaseCom.list_ports()
+
+# ── Reconhecer se estamos rodando no WSL ou no Linux nativo ──────────────
+
+def is_wsl() -> bool:
+    # 1. Check the kernel name string (Most reliable method)
+    # WSL 1 typically includes "Microsoft"
+    # WSL 2 typically includes "microsoft-standard-WSL"
+    if "microsoft" in platform.uname().release.lower():
+        return True
+
+    # 2. Fallback check for certain container/minimal setups
+    # Checks the system version file directly
+    try:
+        with open('/proc/version', 'r') as f:
+            if 'microsoft' in f.read().lower():
+                return True
+    except FileNotFoundError:
+        pass
+
+    return False

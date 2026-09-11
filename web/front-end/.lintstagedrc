@@ -1,0 +1,7 @@
+{
+  "!(*.tsx|*.ts|*.js)": "prettier --ignore-unknown --check",
+  "*.{ts,tsx,js}": [
+    "prettier --ignore-unknown --write",
+    "eslint --max-warnings=0"
+  ]
+}

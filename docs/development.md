@@ -76,7 +76,7 @@ pip install ipython
 
 ```
 src/
-├── app.py                  # Aplicacao principal (Flask + CLI)
+├── app.py                  # Aplicacão principal (Flask + CLI)
 │   ├── Modo Flask
 │   │   ├── Flask app initialization
 │   │   ├── Routes (/, /satellite)
@@ -110,17 +110,17 @@ src/
 │   │   │   └── get_port_options() / get_baudrate_options()
 │   │   └── def list_ports()
 │   │
-│   └── FakeCOM.py          # Dados sinteticos para testes
+│   └── FakeCOM.py          # Dados sintéticos para testes
 │       └── class FakeCom(BaseCom)
 │           └── Gera dados v2.0 com TEAM_ID #213 (ciclico)
 │
 web/
 ├── templates/             # Templates Jinja2
 │   ├── base.html         # Template base
-│   ├── index.html        # Pagina do foguete (#11, #51)
-│   └── satellite.html    # Pagina do satelite (#213)
+│   ├── index.html        # Página do foguete (#11, #51)
+│   └── satellite.html    # Página do satélite (#213)
 │
-├── static/               # Arquivos estaticos
+├── static/               # Arquivos estáticos
 │   ├── css/
 │   │   └── app.css      # Estilos customizados
 │   ├── js/
